@@ -16,13 +16,12 @@
             android:id="@+id/included_progress_bar"
             layout="@layout/progress_bar" />
 
-
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/search_input_layout"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="6dp"
+            android:layout_margin="@dimen/margin_size_8"
             app:endIconMode="clear_text"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -33,10 +32,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:drawableStart="@drawable/ic_baseline_search_24"
-                android:drawablePadding="2dp"
-                android:hint="Search repository"
+                android:drawablePadding="@dimen/padding_size_2"
+                android:hint="@string/search_repository"
                 android:inputType="text"
-                android:textSize="16sp" />
+                android:textSize="@dimen/text_size_16" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -45,12 +44,24 @@
             android:id="@+id/search_recycler"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_margin="6dp"
+            android:layout_margin="@dimen/margin_size_8"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/search_input_layout"
             tools:listitem="@layout/item_repository" />
 
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/scroll_to_top"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/margin_size_16"
+            android:src="@drawable/ic_baseline_arrow_upward_24"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:rippleColor="@color/purple_200" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

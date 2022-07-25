@@ -7,4 +7,6 @@
     <string name="github_api_viewer_demo_n_ntechnology_stack">Github API Viewer (DEMO)\n\nTechnology stack:</string>
     <string name="stack">Kotlin\n ViewBinding\n Retrofit\n MVVM\n Hilt\n Coroutines\n Kotlin FLow\n Glide\n</string>
     <string name="thank_you_for_your_attention">Thank you for your attention!</string>
+    <string name="search_repository">Search repository</string>
+    <string name="last_modified_date">Last modified date</string>
 </resources>

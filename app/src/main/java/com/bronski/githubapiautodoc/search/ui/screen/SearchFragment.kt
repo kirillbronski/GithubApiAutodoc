@@ -9,6 +9,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.bronski.githubapiautodoc.core.api.data.SearchResponseResult
 import com.bronski.githubapiautodoc.core.state.ViewState
 import com.bronski.githubapiautodoc.core.ui.BaseFragment
@@ -32,6 +33,17 @@ class SearchFragment : BaseFragment() {
         }
     }
 
+    private val scrollListener = object : RecyclerView.OnScrollListener() {
+
+        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+            super.onScrolled(recyclerView, dx, dy)
+            if (dy < 0 && !binding.scrollToTop.isShown)
+                binding.scrollToTop.show();
+            else if (dy >= 0 && binding.scrollToTop.isShown)
+                binding.scrollToTop.hide();
+        }
+    }
+
     private val searchAdapter = SearchAdapter(listener = recyclerItemListener)
 
     override fun onCreateView(
@@ -44,10 +56,12 @@ class SearchFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         setUpAdapter()
         textChangedListener()
         checkViewState()
         swipeToRefreshData()
+        scrollToTop()
     }
 
     override fun onDestroy() {
@@ -80,6 +94,7 @@ class SearchFragment : BaseFragment() {
         searchRecycler.apply {
             adapter = searchAdapter
             layoutManager = LinearLayoutManager(requireContext())
+            addOnScrollListener(this@SearchFragment.scrollListener)
         }
     }
 
@@ -95,6 +110,15 @@ class SearchFragment : BaseFragment() {
             binding.swipeToRefresh.isRefreshing = false
         }
     }
+
+    private fun scrollToTop() {
+        binding.scrollToTop.setOnClickListener {
+            binding.searchRecycler.postDelayed({
+                binding.searchRecycler.smoothScrollToPosition(0)
+            }, 250)
+        }
+    }
+
 
     private fun displayAccountFragment(userName: String) {
         findNavController().navigate(

@@ -2,7 +2,6 @@ package com.bronski.githubapiautodoc.core.ui
 
 import android.widget.ProgressBar
 import android.widget.Toast
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 

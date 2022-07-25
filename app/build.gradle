@@ -36,6 +36,17 @@ android {
     viewBinding {
         enabled true
     }
+    flavorDimensions 'autodoc'
+    productFlavors {
+        lightver {
+            dimension 'autodoc'
+            versionNameSuffix 'light'
+        }
+        fullver {
+            dimension 'autodoc'
+            versionNameSuffix 'full'
+        }
+    }
 }
 
 dependencies {

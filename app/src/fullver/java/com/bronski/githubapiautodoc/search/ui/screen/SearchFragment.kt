@@ -37,10 +37,12 @@ class SearchFragment : BaseFragment() {
 
         override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
             super.onScrolled(recyclerView, dx, dy)
-            if (dy < 0 && !binding.scrollToTop.isShown)
-                binding.scrollToTop.show();
-            else if (dy >= 0 && binding.scrollToTop.isShown)
-                binding.scrollToTop.hide();
+            if (dy < 0 && !binding.scrollToTop.isShown){
+                binding.scrollToTop.show()
+            }
+            else if (dy >= 0 && binding.scrollToTop.isShown){
+                binding.scrollToTop.hide()
+            }
         }
     }
 
@@ -118,7 +120,6 @@ class SearchFragment : BaseFragment() {
             }, 250)
         }
     }
-
 
     private fun displayAccountFragment(userName: String) {
         findNavController().navigate(

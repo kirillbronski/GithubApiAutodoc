@@ -8,7 +8,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.bronski.githubapiautodoc.R
-import com.bronski.githubapiautodoc.core.api.data.UserResponseResult
+import com.bronski.githubapiautodoc.core.api.data.User
 import com.bronski.githubapiautodoc.core.state.ViewState
 import com.bronski.githubapiautodoc.core.ui.BaseFragment
 import com.bronski.githubapiautodoc.databinding.FragmentUserDetailsBinding
@@ -16,10 +16,7 @@ import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class UserDetailsFragment : BaseFragment() {
-
-    private var _binding: FragmentUserDetailsBinding? = null
-    private val binding get() = _binding!!
+class UserDetailsFragment : BaseFragment<FragmentUserDetailsBinding>() {
 
     private val args: UserDetailsFragmentArgs by navArgs()
     private val viewModel by viewModels<UserDetailsViewModel>()
@@ -31,31 +28,18 @@ class UserDetailsFragment : BaseFragment() {
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentUserDetailsBinding.inflate(inflater, container, false)
-        return binding.root
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         checkViewState()
         swipeToRefreshData()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
-    }
-
     private fun checkViewState() {
         lifecycleScope.launchWhenStarted {
-            viewModel.viewState.collect {
+            viewModel.viewState.observe(viewLifecycleOwner) {
                 when (it) {
-                    is ViewState.SuccessUserState -> {
-                        initDetailsScreen(it.userResponseResult)
+                    is ViewState.SuccessState -> {
+                        initDetailsScreen(it.user)
                         hideProgressIndicator(binding.includedProgressBar.progressBar)
                     }
                     is ViewState.LoadingState -> {
@@ -78,7 +62,7 @@ class UserDetailsFragment : BaseFragment() {
         }
     }
 
-    private fun initDetailsScreen(userResponseResult: UserResponseResult) {
+    private fun initDetailsScreen(userResponseResult: User) {
         with(binding) {
             nicknameTextView.text = userResponseResult.login
             bioTextView.text = userResponseResult.bio
@@ -93,10 +77,10 @@ class UserDetailsFragment : BaseFragment() {
 
     private fun loadImage(
         binding: FragmentUserDetailsBinding,
-        userResponseResult: UserResponseResult
+        user: User,
     ) {
         Glide.with(binding.avatarImageView.context)
-            .load(userResponseResult.avatarUrl)
+            .load(user.avatarUrl)
             .circleCrop()
             .placeholder(R.drawable.ic_avatar_circle_24)
             .error(R.drawable.ic_avatar_circle_24)
@@ -105,11 +89,13 @@ class UserDetailsFragment : BaseFragment() {
 
     private fun getTwitterName(
         binding: FragmentUserDetailsBinding,
-        userResponseResult: UserResponseResult
+        user: User,
     ) =
-        if (userResponseResult.twitterUsername != null) {
-            binding.socialNetworkTextView.text = "Twitter: @" + userResponseResult.twitterUsername
+        if (user.twitterUsername != null) {
+            binding.socialNetworkTextView.text = "Twitter: @" + user.twitterUsername
         } else {
             binding.socialNetworkTextView.text = "Coming soon"
         }
+
+    override fun getViewBinding() = FragmentUserDetailsBinding.inflate(layoutInflater)
 }

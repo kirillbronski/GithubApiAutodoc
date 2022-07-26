@@ -1,4 +1,4 @@
-package com.bronski.githubapiautodoc.userdetails.source
+package com.bronski.githubapiautodoc.userdetails.source.network
 
 import com.bronski.githubapiautodoc.core.utils.BaseResult
 

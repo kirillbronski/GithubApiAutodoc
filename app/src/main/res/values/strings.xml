@@ -2,11 +2,12 @@
     <string name="app_name">GithubApiAutodoc</string>
     <string name="search_item">Search</string>
     <string name="info_item">Info</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="github_api_viewer_demo_n_ntechnology_stack">Github API Viewer (DEMO)\n\nTechnology stack:</string>
-    <string name="stack">Kotlin\n ViewBinding\n Retrofit\n MVVM\n Hilt\n Coroutines\n Kotlin FLow\n Glide\n</string>
+    <string name="stack">Kotlin\n ViewBinding\n Retrofit\n MVVM\n Hilt\n Coroutines\n Paging library\n Glide\n</string>
     <string name="thank_you_for_your_attention">Thank you for your attention!</string>
     <string name="search_repository">Search repository</string>
     <string name="last_modified_date">Last modified date</string>
+    <string name="search_by">Search By</string>
+    <string name="user_photo">User\'s photo</string>
+    <string name="load_error">Oops, can\'t load data. Please start searching</string>
 </resources>

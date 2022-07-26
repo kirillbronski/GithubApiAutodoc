@@ -1,10 +1,10 @@
 package com.bronski.githubapiautodoc.di.modules
 
 import com.bronski.githubapiautodoc.core.api.GithubApi
-import com.bronski.githubapiautodoc.search.source.GithubSearchRepoImpl
-import com.bronski.githubapiautodoc.search.source.IGithubSearchRepo
-import com.bronski.githubapiautodoc.userdetails.source.GithubUserRepoImpl
-import com.bronski.githubapiautodoc.userdetails.source.IGithubUserRepo
+import com.bronski.githubapiautodoc.search.source.network.GithubSearchRepoImpl
+import com.bronski.githubapiautodoc.search.source.network.IGithubSearchRepo
+import com.bronski.githubapiautodoc.userdetails.source.network.GithubUserRepoImpl
+import com.bronski.githubapiautodoc.userdetails.source.network.IGithubUserRepo
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

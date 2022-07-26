@@ -1,7 +1,7 @@
 package com.bronski.githubapiautodoc.core.utils
 
-import com.bronski.githubapiautodoc.core.api.data.SearchResponseResult
+import com.bronski.githubapiautodoc.core.api.data.Repository
 
 interface RecyclerItemListener {
-    fun onItemClick(itemRepository: SearchResponseResult)
+    fun onItemClick(itemRepository: Repository)
 }

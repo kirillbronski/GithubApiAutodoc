@@ -7,29 +7,35 @@ import android.view.ViewGroup
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
+import androidx.paging.LoadState
+import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bronski.githubapiautodoc.core.api.data.SearchResponseResult
-import com.bronski.githubapiautodoc.core.state.ViewState
+import com.bronski.githubapiautodoc.core.api.data.Repository
 import com.bronski.githubapiautodoc.core.ui.BaseFragment
 import com.bronski.githubapiautodoc.core.utils.RecyclerItemListener
+import com.bronski.githubapiautodoc.core.utils.simpleScan
 import com.bronski.githubapiautodoc.databinding.FragmentSearchBinding
+import com.bronski.githubapiautodoc.search.ui.DefaultLoadStateAdapter
 import com.bronski.githubapiautodoc.search.ui.SearchAdapter
 import com.bronski.githubapiautodoc.search.ui.SearchViewModel
+import com.bronski.githubapiautodoc.search.ui.TryAgainAction
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class SearchFragment : BaseFragment() {
-
-    private var _binding: FragmentSearchBinding? = null
-    private val binding get() = _binding!!
+class SearchFragment : BaseFragment<FragmentSearchBinding>() {
 
     private val viewModel by viewModels<SearchViewModel>()
+    private lateinit var mainLoadStateHolder: DefaultLoadStateAdapter.Holder
 
     private val recyclerItemListener = object : RecyclerItemListener {
-        override fun onItemClick(itemRepository: SearchResponseResult) {
-            displayToastMessage("Without details version")
+        override fun onItemClick(itemRepository: Repository) {
+            displayToastMessage("Flavor without details")
         }
     }
 
@@ -37,77 +43,56 @@ class SearchFragment : BaseFragment() {
 
         override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
             super.onScrolled(recyclerView, dx, dy)
-            if (dy < 0 && !binding.scrollToTop.isShown)
-                binding.scrollToTop.show();
-            else if (dy >= 0 && binding.scrollToTop.isShown)
-                binding.scrollToTop.hide();
+            if (dy < 0 && !binding.scrollToTop.isShown) {
+                binding.scrollToTop.show()
+            } else if (dy >= 0 && binding.scrollToTop.isShown) {
+                binding.scrollToTop.hide()
+            }
         }
     }
 
     private val searchAdapter = SearchAdapter(listener = recyclerItemListener)
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentSearchBinding.inflate(inflater, container, false)
-        return binding.root
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         setUpAdapter()
-        textChangedListener()
-        checkViewState()
+        setupSearchInput()
+        observeRepositories()
+        observeLoadState()
         swipeToRefreshData()
         scrollToTop()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
-    }
-
-    private fun checkViewState() {
-        lifecycleScope.launchWhenStarted {
-            viewModel.viewState.collect {
-                when (it) {
-                    is ViewState.SuccessState -> {
-                        searchAdapter.submitList(it.listRepo)
-                        hideProgressIndicator(binding.includedProgressBar.progressBar)
-                    }
-                    is ViewState.LoadingState -> {
-                        showProgressIndicator(binding.includedProgressBar.progressBar)
-                    }
-                    is ViewState.ErrorState -> {
-                        displayToastMessage(it.message.toString())
-                        hideProgressIndicator(binding.includedProgressBar.progressBar)
-                    }
-                    else -> {}
-                }
-            }
-        }
+        handleScrollingToTopWhenSearching()
     }
 
     private fun setUpAdapter() = with(binding) {
+
+        val tryAgainAction: TryAgainAction = { searchAdapter.retry() }
+        val footerAdapter = DefaultLoadStateAdapter(tryAgainAction)
+        val adapterWithLoadState = searchAdapter.withLoadStateFooter(footerAdapter)
+
         searchRecycler.apply {
-            adapter = searchAdapter
+            adapter = adapterWithLoadState
             layoutManager = LinearLayoutManager(requireContext())
+            (itemAnimator as? DefaultItemAnimator)?.supportsChangeAnimations = false
             addOnScrollListener(this@SearchFragment.scrollListener)
         }
+        mainLoadStateHolder = DefaultLoadStateAdapter.Holder(
+            loadStateView,
+            swipeToRefresh,
+            tryAgainAction
+        )
     }
 
-    private fun textChangedListener() {
+    private fun setupSearchInput() {
         binding.searchEditText.addTextChangedListener {
-            viewModel.searchFieldValue(it.toString())
+            viewModel.setSearchBy(it.toString())
         }
     }
 
     private fun swipeToRefreshData() {
         binding.swipeToRefresh.setOnRefreshListener {
-            viewModel.getSearchResult()
-            binding.swipeToRefresh.isRefreshing = false
+            viewModel.swipeToUpdate()
         }
     }
 
@@ -118,4 +103,37 @@ class SearchFragment : BaseFragment() {
             }, 250)
         }
     }
+
+    private fun observeRepositories() {
+        lifecycleScope.launch {
+            viewModel.repositoriesFlow.collectLatest {
+                searchAdapter.submitData(it)
+            }
+        }
+    }
+
+    private fun observeLoadState() {
+        lifecycleScope.launch {
+            searchAdapter.loadStateFlow.debounce(200).collectLatest {
+                mainLoadStateHolder.bind(it.refresh)
+            }
+        }
+    }
+
+    private fun handleScrollingToTopWhenSearching() = lifecycleScope.launch {
+        getRefreshLoadStateFlow()
+            .simpleScan(count = 2)
+            .collectLatest { (previousState, currentState) ->
+                if (previousState is LoadState.Loading && currentState is LoadState.NotLoading) {
+                    binding.searchRecycler.scrollToPosition(0)
+                }
+            }
+    }
+
+    private fun getRefreshLoadStateFlow(): Flow<LoadState> {
+        return searchAdapter.loadStateFlow
+            .map { it.refresh }
+    }
+
+    override fun getViewBinding() = FragmentSearchBinding.inflate(layoutInflater)
 }

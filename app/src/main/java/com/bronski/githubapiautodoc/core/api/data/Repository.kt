@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 import java.text.SimpleDateFormat
 import java.util.*
 
-data class SearchResponseResult(
+data class Repository(
     @SerializedName("node_id") val nodeId: String,
     @SerializedName("description") val description: String,
     @SerializedName("language") val language: String,

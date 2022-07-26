@@ -1,12 +1,10 @@
 package com.bronski.githubapiautodoc.core.state
 
-import com.bronski.githubapiautodoc.core.api.data.SearchResponseResult
-import com.bronski.githubapiautodoc.core.api.data.UserResponseResult
+import com.bronski.githubapiautodoc.core.api.data.User
 
 sealed class ViewState {
     object DefaultState : ViewState()
     object LoadingState : ViewState()
-    class SuccessState(val listRepo: MutableList<SearchResponseResult>) : ViewState()
-    class SuccessUserState(val userResponseResult: UserResponseResult) : ViewState()
+    class SuccessState(val user: User) : ViewState()
     class ErrorState(var message: String?) : ViewState()
 }

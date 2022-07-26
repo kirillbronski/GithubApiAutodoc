@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="margin_size_40">40dp</dimen>
+    <dimen name="text_size_24">24sp</dimen>
+    <dimen name="margin_size_20">20dp</dimen>
+    <dimen name="text_size_20">20sp</dimen>
+    <dimen name="image_width_150">150dp</dimen>
+    <dimen name="image_height_150">150dp</dimen>
+    <dimen name="width_size_0">0dp</dimen>
+    <dimen name="margin_size_4">4dp</dimen>
+    <dimen name="margin_size_8">8dp</dimen>
+    <dimen name="padding_size_2">2dp</dimen>
+    <dimen name="text_size_16">16sp</dimen>
+    <dimen name="margin_size_16">16dp</dimen>
+    <dimen name="margin_size_6">6dp</dimen>
+    <dimen name="text_size_12">12sp</dimen>
+    <dimen name="text_size_14">14sp</dimen>
+</resources>
